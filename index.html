@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cam Casperson — AI Operations & Implementation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-ink: #1a1715;
+            --color-ink-light: #4a4542;
+            --color-ink-muted: #7a7572;
+            --color-cream: #faf8f5;
+            --color-cream-dark: #f0ebe4;
+            --color-accent: #4a6d5c;
+            --color-accent-hover: #3d5a4c;
+            --color-accent-light: #e8eeea;
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Outfit', -apple-system, sans-serif;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            font-weight: 300;
+            background-color: var(--color-cream);
+            color: var(--color-ink);
+            line-height: 1.7;
+            font-size: 17px;
+            overflow-x: hidden;
+        }
+
+        /* Subtle grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Italic accent class */
+        .accent-italic {
+            font-family: var(--font-display);
+            font-style: italic;
+            color: var(--color-accent);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 24px 0;
+            background: linear-gradient(to bottom, var(--color-cream) 60%, transparent);
+            transition: all 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(250, 248, 245, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: var(--color-ink);
+            text-decoration: none;
+        }
+
+        .nav-contact {
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-ink);
+            text-decoration: none;
+            padding: 12px 24px;
+            border: 1px solid var(--color-ink);
+            transition: all 0.3s ease;
+        }
+
+        .nav-contact:hover {
+            background: var(--color-ink);
+            color: var(--color-cream);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 140px 0 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease forwards;
+            animation-delay: 0.2s;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-tag {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            margin-bottom: 24px;
+            display: inline-block;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(48px, 6vw, 72px);
+            font-weight: 400;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 32px;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--color-accent);
+        }
+
+        .hero-description {
+            font-size: 18px;
+            color: var(--color-ink-light);
+            max-width: 480px;
+            margin-bottom: 48px;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 15px;
+            font-weight: 400;
+            text-decoration: none;
+            padding: 16px 32px;
+            background: var(--color-accent);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .hero-cta:hover {
+            background: var(--color-accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .hero-cta svg {
+            transition: transform 0.3s ease;
+        }
+
+        .hero-cta:hover svg {
+            transform: translateX(4px);
+        }
+
+        /* Hero Visual - Network/Constellation */
+        .hero-visual {
+            position: relative;
+            height: 550px;
+            opacity: 0;
+            animation: fadeIn 1s ease forwards;
+            animation-delay: 0.5s;
+        }
+
+        .hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--color-accent-light);
+            border: 1px solid var(--color-accent);
+            opacity: 0.6;
+        }
+
+        .hero-circle-1 {
+            width: 320px;
+            height: 320px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .hero-circle-2 {
+            width: 220px;
+            height: 220px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 4s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+
+        .hero-circle-3 {
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--color-accent);
+            opacity: 0.15;
+            animation: pulse 4s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        /* Network nodes */
+        .node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--color-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(74, 109, 92, 0.4);
+        }
+
+        .node::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--color-accent);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: ripple 2s ease-out infinite;
+        }
+
+        .node-1 { top: 20%; left: 30%; animation: float 6s ease-in-out infinite; }
+        .node-2 { top: 35%; left: 70%; animation: float 7s ease-in-out infinite reverse; }
+        .node-3 { top: 65%; left: 25%; animation: float 8s ease-in-out infinite; }
+        .node-4 { top: 75%; left: 65%; animation: float 5s ease-in-out infinite reverse; }
+        .node-5 { top: 45%; left: 48%; animation: float 6s ease-in-out infinite; }
+
+        /* Connection lines */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+        }
+
+        .connections line {
+            stroke: var(--color-accent);
+            stroke-width: 1;
+            stroke-dasharray: 4 4;
+            animation: dash 20s linear infinite;
+        }
+
+        /* Center icon */
+        .hero-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: var(--color-cream);
+            border: 2px solid var(--color-accent);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 20px 60px rgba(74, 109, 92, 0.2);
+            z-index: 10;
+        }
+
+        .hero-icon svg {
+            width: 36px;
+            height: 36px;
+            stroke: var(--color-accent);
+        }
+
+        /* Floating labels */
+        .float-label {
+            position: absolute;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-ink-muted);
+            background: var(--color-cream);
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(74, 109, 92, 0.2);
+            white-space: nowrap;
+        }
+
+        .float-label-1 { top: 15%; right: 10%; animation: float 7s ease-in-out infinite; }
+        .float-label-2 { bottom: 20%; left: 5%; animation: float 6s ease-in-out infinite reverse; }
+        .float-label-3 { top: 40%; right: 0; animation: float 8s ease-in-out infinite; }
+
+        /* Section Styling */
+        section {
+            padding: 120px 0;
+        }
+
+        .section-header {
+            margin-bottom: 80px;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-ink-muted);
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: clamp(36px, 4vw, 52px);
+            font-weight: 400;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .section-title em {
+            font-style: italic;
+            color: var(--color-accent);
+        }
+
+        /* About Section */
+        .about {
+            background: var(--color-ink);
+            color: var(--color-cream);
+        }
+
+        .about .section-tag {
+            color: var(--color-accent);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 100px;
+            align-items: start;
+        }
+
+        .about-text {
+            font-size: 20px;
+            line-height: 1.8;
+            color: rgba(250, 248, 245, 0.8);
+        }
+
+        .about-text p {
+            margin-bottom: 24px;
+        }
+
+        .about-text em {
+            font-family: var(--font-display);
+            font-style: italic;
+            color: rgba(250, 248, 245, 0.95);
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            padding-top: 20px;
+        }
+
+        .stat {
+            border-left: 1px solid rgba(250, 248, 245, 0.2);
+            padding-left: 24px;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 400;
+            color: var(--color-accent);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(250, 248, 245, 0.6);
+            letter-spacing: 0.02em;
+        }
+
+        /* Services Section */
+        .services {
+            background: var(--color-cream);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .service-card {
+            padding: 48px 36px;
+            background: white;
+            border: 1px solid rgba(26, 23, 21, 0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--color-accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(26, 23, 21, 0.08);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-number {
+            font-family: var(--font-display);
+            font-size: 14px;
+            color: var(--color-ink-muted);
+            margin-bottom: 32px;
+        }
+
+        .service-title {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .service-title em {
+            font-style: italic;
+            color: var(--color-accent);
+        }
+
+        .service-description {
+            font-size: 15px;
+            color: var(--color-ink-light);
+            line-height: 1.7;
+        }
+
+        /* Process Section */
+        .process {
+            background: var(--color-cream-dark);
+        }
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .process-item {
+            display: flex;
+            gap: 32px;
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(26, 23, 21, 0.1);
+        }
+
+        .process-number {
+            font-family: var(--font-display);
+            font-size: 48px;
+            font-weight: 400;
+            color: var(--color-accent);
+            line-height: 1;
+            min-width: 60px;
+        }
+
+        .process-content h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .process-content p {
+            font-size: 15px;
+            color: var(--color-ink-light);
+        }
+
+        /* Engagement Section */
+        .engagement {
+            background: white;
+        }
+
+        .engagement-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .engagement-card {
+            padding: 56px 48px;
+            border: 1px solid rgba(26, 23, 21, 0.1);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .engagement-card:hover {
+            border-color: var(--color-accent);
+        }
+
+        .engagement-card.featured {
+            background: var(--color-ink);
+            color: var(--color-cream);
+            border-color: var(--color-ink);
+        }
+
+        .engagement-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            margin-bottom: 20px;
+        }
+
+        .engagement-title {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .engagement-title em {
+            font-style: italic;
+        }
+
+        .engagement-description {
+            font-size: 16px;
+            color: var(--color-ink-light);
+            margin-bottom: 32px;
+        }
+
+        .engagement-card.featured .engagement-description {
+            color: rgba(250, 248, 245, 0.7);
+        }
+
+        .engagement-features {
+            list-style: none;
+        }
+
+        .engagement-features li {
+            padding: 12px 0;
+            border-top: 1px solid rgba(26, 23, 21, 0.08);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .engagement-card.featured .engagement-features li {
+            border-color: rgba(250, 248, 245, 0.1);
+        }
+
+        .engagement-features li::before {
+            content: '\2192';
+            color: var(--color-accent);
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--color-ink);
+            color: var(--color-cream);
+            text-align: center;
+            padding: 160px 0;
+        }
+
+        .contact .section-tag {
+            color: var(--color-accent);
+        }
+
+        .contact .section-title {
+            max-width: 700px;
+            margin: 0 auto 24px;
+        }
+
+        .contact .section-title em {
+            color: var(--color-cream);
+        }
+
+        .contact-subtitle {
+            font-size: 18px;
+            color: rgba(250, 248, 245, 0.7);
+            max-width: 500px;
+            margin: 0 auto 48px;
+        }
+
+        .contact-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 400;
+            padding: 20px 48px;
+            background: var(--color-accent);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .contact-cta:hover {
+            background: var(--color-accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .contact-email {
+            margin-top: 40px;
+            font-size: 15px;
+            color: rgba(250, 248, 245, 0.5);
+        }
+
+        .contact-email a {
+            color: var(--color-cream);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(250, 248, 245, 0.3);
+            transition: border-color 0.3s ease;
+        }
+
+        .contact-email a:hover {
+            border-color: var(--color-cream);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-ink);
+            padding: 40px 0;
+            border-top: 1px solid rgba(250, 248, 245, 0.1);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(250, 248, 245, 0.5);
+            font-size: 14px;
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 20px;
+            color: var(--color-cream);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.05);
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -100;
+            }
+        }
+
+        /* Scroll animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .hero-visual {
+                height: 400px;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .float-label {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+
+            section {
+                padding: 80px 0;
+            }
+
+            .hero {
+                padding: 120px 0 80px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .engagement-options {
+                grid-template-columns: 1fr;
+            }
+
+            .about-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .hero-visual {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">Cam Casperson</a>
+            <a href="#contact" class="nav-contact">Get in Touch</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <span class="hero-tag">AI Operations & Implementation</span>
+                    <h1 class="hero-title">Making your business <em>AI-native</em></h1>
+                    <p class="hero-description">I help organizations transform their systems and processes for the AI era—delivering <em class="accent-italic">measurable outcomes</em> through strategic implementation.</p>
+                    <a href="#contact" class="hero-cta">
+                        Start a conversation
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="hero-visual">
+                    <!-- Concentric circles -->
+                    <div class="hero-circle hero-circle-1"></div>
+                    <div class="hero-circle hero-circle-2"></div>
+                    <div class="hero-circle hero-circle-3"></div>
+
+                    <!-- Network nodes -->
+                    <div class="node node-1"></div>
+                    <div class="node node-2"></div>
+                    <div class="node node-3"></div>
+                    <div class="node node-4"></div>
+                    <div class="node node-5"></div>
+
+                    <!-- Connection lines SVG -->
+                    <svg class="connections" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <line x1="30" y1="20" x2="48" y2="45"/>
+                        <line x1="70" y1="35" x2="48" y2="45"/>
+                        <line x1="25" y1="65" x2="48" y2="45"/>
+                        <line x1="65" y1="75" x2="48" y2="45"/>
+                        <line x1="30" y1="20" x2="70" y2="35"/>
+                        <line x1="25" y1="65" x2="65" y2="75"/>
+                    </svg>
+
+                    <!-- Center icon -->
+                    <div class="hero-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+
+                    <!-- Floating labels -->
+                    <span class="float-label float-label-1">Automation</span>
+                    <span class="float-label float-label-2">Integration</span>
+                    <span class="float-label float-label-3">Strategy</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="section-header">
+                    <span class="section-tag">About</span>
+                    <h2 class="section-title">Bridging <em>operations</em> and intelligence</h2>
+                </div>
+                <div>
+                    <div class="about-text">
+                        <p>The gap between AI's potential and its <em>practical application</em> in business operations is where value gets lost. I close that gap.</p>
+                        <p>With deep expertise in operational systems and processes, I partner with companies to identify high-impact opportunities for AI integration—then execute with precision.</p>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <div class="stat-value">ROI</div>
+                            <div class="stat-label">Focused outcomes</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">End-to-end</div>
+                            <div class="stat-label">Implementation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="services">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">What I Do</span>
+                <h2 class="section-title">Strategic <em>AI implementation</em></h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <span class="service-number">01</span>
+                    <h3 class="service-title">Process <em>Intelligence</em></h3>
+                    <p class="service-description">Audit and reimagine your operational workflows for AI-native efficiency. I identify bottlenecks and design intelligent solutions.</p>
+                </div>
+                <div class="service-card reveal">
+                    <span class="service-number">02</span>
+                    <h3 class="service-title">Systems <em>Integration</em></h3>
+                    <p class="service-description">Seamlessly embed AI capabilities into your existing technology stack. Practical implementation that actually works.</p>
+                </div>
+                <div class="service-card reveal">
+                    <span class="service-number">03</span>
+                    <h3 class="service-title">Targeted <em>Solutions</em></h3>
+                    <p class="service-description">High-impact projects with clear deliverables and measurable ROI. Specific outcomes, defined scope, tangible results.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="process">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Approach</span>
+                <h2 class="section-title">How I work</h2>
+            </div>
+            <div class="process-grid">
+                <div class="process-item reveal">
+                    <span class="process-number">1</span>
+                    <div class="process-content">
+                        <h3>Discovery</h3>
+                        <p>I start by understanding your operations, challenges, and goals. No assumptions—just careful analysis.</p>
+                    </div>
+                </div>
+                <div class="process-item reveal">
+                    <span class="process-number">2</span>
+                    <div class="process-content">
+                        <h3>Strategy</h3>
+                        <p>I identify the highest-value opportunities and design a practical roadmap for implementation.</p>
+                    </div>
+                </div>
+                <div class="process-item reveal">
+                    <span class="process-number">3</span>
+                    <div class="process-content">
+                        <h3>Implementation</h3>
+                        <p>I build and integrate solutions that work within your existing systems and workflows.</p>
+                    </div>
+                </div>
+                <div class="process-item reveal">
+                    <span class="process-number">4</span>
+                    <div class="process-content">
+                        <h3>Optimization</h3>
+                        <p>Continuous refinement to ensure lasting value and evolving capability over time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="engagement">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tag">Engagement Models</span>
+                <h2 class="section-title">Flexible <em>partnership</em> structures</h2>
+            </div>
+            <div class="engagement-options">
+                <div class="engagement-card reveal">
+                    <span class="engagement-label">Project-Based</span>
+                    <h3 class="engagement-title">Targeted <em>Initiatives</em></h3>
+                    <p class="engagement-description">Defined scope, clear deliverables, and measurable outcomes. Perfect for specific workflows or proof-of-concept implementations.</p>
+                    <ul class="engagement-features">
+                        <li>Scoped project with fixed deliverables</li>
+                        <li>Clear timeline and milestones</li>
+                        <li>Defined success metrics</li>
+                        <li>Knowledge transfer included</li>
+                    </ul>
+                </div>
+                <div class="engagement-card featured reveal">
+                    <span class="engagement-label">Ongoing Partnership</span>
+                    <h3 class="engagement-title">Retained <em>Advisory</em></h3>
+                    <p class="engagement-description">Continuous support for evolving AI needs. Strategic guidance and hands-on implementation as your organization grows.</p>
+                    <ul class="engagement-features">
+                        <li>Monthly strategic sessions</li>
+                        <li>Priority implementation support</li>
+                        <li>Continuous optimization</li>
+                        <li>Dedicated partnership</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="container">
+            <span class="section-tag reveal">Get Started</span>
+            <h2 class="section-title reveal">Ready to explore <em>what's possible?</em></h2>
+            <p class="contact-subtitle reveal">Let's discuss how AI can transform your operations. No pressure, no jargon—just a conversation about your goals.</p>
+            <a href="mailto:hello@example.com" class="contact-cta reveal">
+                Schedule a conversation
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <p class="contact-email reveal">Or email directly: <a href="mailto:hello@example.com">hello@example.com</a></p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <span class="footer-logo">Cam Casperson</span>
+                <span>&copy; 2025 All rights reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation scroll effect
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Reveal on scroll
+        const reveals = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            reveals.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        window.addEventListener('load', revealOnScroll);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
