@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get in Touch — Cam Casperson</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-ink: #1a1715;
+            --color-ink-light: #4a4542;
+            --color-ink-muted: #7a7572;
+            --color-cream: #faf8f5;
+            --color-cream-dark: #f0ebe4;
+            --color-accent: #4a6d5c;
+            --color-accent-hover: #3d5a4c;
+            --color-accent-light: #e8eeea;
+            --color-error: #c45a5a;
+            --color-success: #4a6d5c;
+            --font-display: 'Cormorant Garamond', Georgia, serif;
+            --font-body: 'Outfit', -apple-system, sans-serif;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            font-weight: 300;
+            background-color: var(--color-cream);
+            color: var(--color-ink);
+            line-height: 1.7;
+            font-size: 17px;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Subtle grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            z-index: 9999;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 24px 0;
+            background: linear-gradient(to bottom, var(--color-cream) 60%, transparent);
+            transition: all 0.4s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(250, 248, 245, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 0;
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            color: var(--color-ink);
+            text-decoration: none;
+        }
+
+        .nav-back {
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-ink);
+            text-decoration: none;
+            padding: 12px 24px;
+            border: 1px solid var(--color-ink);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back:hover {
+            background: var(--color-ink);
+            color: var(--color-cream);
+        }
+
+        .nav-back svg {
+            transition: transform 0.3s ease;
+        }
+
+        .nav-back:hover svg {
+            transform: translateX(-4px);
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 140px 0 80px;
+        }
+
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 100px;
+            align-items: start;
+            width: 100%;
+        }
+
+        /* Left Column - Header */
+        .contact-header {
+            position: sticky;
+            top: 140px;
+        }
+
+        .section-tag {
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            margin-bottom: 24px;
+            display: block;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: clamp(42px, 5vw, 58px);
+            font-weight: 400;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 28px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.1s;
+        }
+
+        .page-title em {
+            font-style: italic;
+            color: var(--color-accent);
+        }
+
+        .page-description {
+            font-size: 18px;
+            color: var(--color-ink-light);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.2s;
+        }
+
+        .contact-info {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.3s;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-top: 1px solid rgba(26, 23, 21, 0.1);
+        }
+
+        .contact-info-item:last-child {
+            border-bottom: 1px solid rgba(26, 23, 21, 0.1);
+        }
+
+        .contact-info-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--color-accent-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .contact-info-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--color-accent);
+        }
+
+        .contact-info-content {
+            font-size: 15px;
+        }
+
+        .contact-info-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--color-ink-muted);
+            margin-bottom: 4px;
+        }
+
+        .contact-info-value {
+            color: var(--color-ink);
+        }
+
+        .contact-info-value a {
+            color: var(--color-ink);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(26, 23, 21, 0.2);
+            transition: border-color 0.3s ease;
+        }
+
+        .contact-info-value a:hover {
+            border-color: var(--color-accent);
+        }
+
+        /* Right Column - Form */
+        .form-container {
+            background: white;
+            padding: 56px;
+            border: 1px solid rgba(26, 23, 21, 0.08);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease forwards;
+            animation-delay: 0.3s;
+        }
+
+        .form-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .form-subtitle {
+            font-size: 15px;
+            color: var(--color-ink-muted);
+            margin-bottom: 40px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--color-ink-light);
+            margin-bottom: 10px;
+        }
+
+        .form-label .required {
+            color: var(--color-accent);
+            margin-left: 2px;
+        }
+
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 16px 20px;
+            font-family: var(--font-body);
+            font-size: 16px;
+            font-weight: 300;
+            color: var(--color-ink);
+            background: var(--color-cream);
+            border: 1px solid rgba(26, 23, 21, 0.12);
+            border-radius: 0;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            background: white;
+            box-shadow: 0 0 0 3px var(--color-accent-light);
+        }
+
+        .form-input::placeholder,
+        .form-textarea::placeholder {
+            color: var(--color-ink-muted);
+        }
+
+        .form-input.error,
+        .form-textarea.error {
+            border-color: var(--color-error);
+        }
+
+        .form-input.error:focus,
+        .form-textarea.error:focus {
+            box-shadow: 0 0 0 3px rgba(196, 90, 90, 0.15);
+        }
+
+        .form-textarea {
+            min-height: 160px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .error-message {
+            font-size: 13px;
+            color: var(--color-error);
+            margin-top: 8px;
+            display: none;
+        }
+
+        .form-group.has-error .error-message {
+            display: block;
+        }
+
+        .form-submit {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 20px 48px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: white;
+            background: var(--color-accent);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
+
+        .form-submit:hover:not(:disabled) {
+            background: var(--color-accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .form-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .form-submit svg {
+            transition: transform 0.3s ease;
+        }
+
+        .form-submit:hover:not(:disabled) svg {
+            transform: translateX(4px);
+        }
+
+        .form-submit.loading svg.arrow {
+            display: none;
+        }
+
+        .form-submit .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .form-submit.loading .spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success & Error States */
+        .form-message {
+            padding: 20px 24px;
+            margin-bottom: 32px;
+            display: none;
+        }
+
+        .form-message.success {
+            background: var(--color-accent-light);
+            border-left: 3px solid var(--color-accent);
+            display: block;
+        }
+
+        .form-message.error {
+            background: rgba(196, 90, 90, 0.1);
+            border-left: 3px solid var(--color-error);
+            display: block;
+        }
+
+        .form-message-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .form-message-text {
+            font-size: 15px;
+            color: var(--color-ink-light);
+        }
+
+        .form-hidden {
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--color-ink);
+            padding: 40px 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(250, 248, 245, 0.5);
+            font-size: 14px;
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 20px;
+            color: var(--color-cream);
+        }
+
+        /* Decorative Elements */
+        .form-decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 1px solid rgba(74, 109, 92, 0.15);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .form-decoration-1 {
+            top: -40px;
+            right: -40px;
+            animation: pulse-subtle 4s ease-in-out infinite;
+        }
+
+        .form-decoration-2 {
+            bottom: -30px;
+            left: -30px;
+            width: 80px;
+            height: 80px;
+            animation: pulse-subtle 4s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        @keyframes pulse-subtle {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.7;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .contact-wrapper {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .contact-header {
+                position: static;
+            }
+
+            .form-container {
+                padding: 48px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+
+            main {
+                padding: 120px 0 60px;
+            }
+
+            .form-container {
+                padding: 32px 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .form-decoration {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="index.html" class="logo">Cam Casperson</a>
+            <a href="index.html" class="nav-back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-header">
+                    <span class="section-tag">Get in Touch</span>
+                    <h1 class="page-title">Let's start a <em>conversation</em></h1>
+                    <p class="page-description">Ready to explore how AI can transform your operations? Fill out the form and I'll get back to you within 24 hours.</p>
+
+                    <div class="contact-info">
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6"/>
+                                </svg>
+                            </div>
+                            <div class="contact-info-content">
+                                <div class="contact-info-label">Email</div>
+                                <div class="contact-info-value">
+                                    <a href="mailto:cameron@caspersons.com">cameron@caspersons.com</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div class="contact-info-content">
+                                <div class="contact-info-label">Response Time</div>
+                                <div class="contact-info-value">Within 24 hours</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-container" style="position: relative; overflow: visible;">
+                    <div class="form-decoration form-decoration-1"></div>
+                    <div class="form-decoration form-decoration-2"></div>
+
+                    <h2 class="form-title">Send a message</h2>
+                    <p class="form-subtitle">All fields marked with * are required</p>
+
+                    <div id="formMessage" class="form-message"></div>
+
+                    <form id="contactForm" novalidate>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">First Name <span class="required">*</span></label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" placeholder="John" required>
+                                <span class="error-message">Please enter your first name</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">Last Name <span class="required">*</span></label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Doe" required>
+                                <span class="error-message">Please enter your last name</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email Address <span class="required">*</span></label>
+                                <input type="email" id="email" name="email" class="form-input" placeholder="john@company.com" required>
+                                <span class="error-message">Please enter a valid email address</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone" class="form-input" placeholder="+1 (555) 123-4567">
+                                <span class="error-message">Please enter a valid phone number</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label" for="comment">How can I help? <span class="required">*</span></label>
+                            <textarea id="comment" name="comment" class="form-textarea" placeholder="Tell me about your project, challenges, or questions..." required></textarea>
+                            <span class="error-message">Please enter a message</span>
+                        </div>
+
+                        <button type="submit" class="form-submit" id="submitBtn">
+                            <span>Send Message</span>
+                            <svg class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                            <div class="spinner"></div>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <span class="footer-logo">Cam Casperson</span>
+                <span>&copy; 2025 All rights reserved</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation scroll effect
+        const nav = document.querySelector('nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Form handling
+        const form = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const formMessage = document.getElementById('formMessage');
+
+        // Google Apps Script Web App URL - Replace with your deployed script URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/a/macros/caspersons.com/s/AKfycbwAsIqwFlXsjtYbAMJahq_iWKVfY9PmQKtNdlyNa9p-EH9h8WyyGFcaIrAz8sf4QRs7/exec';
+
+        // Validation functions
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePhone(phone) {
+            if (!phone) return true; // Phone is optional
+            const re = /^[\+]?[(]?[0-9]{1,3}[)]?[-\s\.]?[(]?[0-9]{1,4}[)]?[-\s\.]?[0-9]{1,4}[-\s\.]?[0-9]{1,9}$/;
+            return re.test(phone);
+        }
+
+        function showError(field, show = true) {
+            const group = field.closest('.form-group');
+            if (show) {
+                group.classList.add('has-error');
+                field.classList.add('error');
+            } else {
+                group.classList.remove('has-error');
+                field.classList.remove('error');
+            }
+        }
+
+        function validateForm() {
+            let isValid = true;
+
+            // First Name
+            const firstName = document.getElementById('firstName');
+            if (!firstName.value.trim()) {
+                showError(firstName);
+                isValid = false;
+            } else {
+                showError(firstName, false);
+            }
+
+            // Last Name
+            const lastName = document.getElementById('lastName');
+            if (!lastName.value.trim()) {
+                showError(lastName);
+                isValid = false;
+            } else {
+                showError(lastName, false);
+            }
+
+            // Email
+            const email = document.getElementById('email');
+            if (!email.value.trim() || !validateEmail(email.value)) {
+                showError(email);
+                isValid = false;
+            } else {
+                showError(email, false);
+            }
+
+            // Phone (optional but validate if provided)
+            const phone = document.getElementById('phone');
+            if (phone.value && !validatePhone(phone.value)) {
+                showError(phone);
+                isValid = false;
+            } else {
+                showError(phone, false);
+            }
+
+            // Comment
+            const comment = document.getElementById('comment');
+            if (!comment.value.trim()) {
+                showError(comment);
+                isValid = false;
+            } else {
+                showError(comment, false);
+            }
+
+            return isValid;
+        }
+
+        // Clear errors on input
+        document.querySelectorAll('.form-input, .form-textarea').forEach(field => {
+            field.addEventListener('input', () => {
+                showError(field, false);
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate
+            if (!validateForm()) {
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.querySelector('span').textContent = 'Sending...';
+
+            // Prepare form data
+            const formData = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                comment: document.getElementById('comment').value.trim(),
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Submit to Google Apps Script
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                // Since we're using no-cors, we can't read the response
+                // We'll assume success if no error is thrown
+                showFormMessage('success', 'Message sent!', 'Thank you for reaching out. I\'ll get back to you within 24 hours.');
+                form.reset();
+                form.classList.add('form-hidden');
+
+            } catch (error) {
+                console.error('Error:', error);
+                showFormMessage('error', 'Something went wrong', 'Please try again or email directly at cameron@caspersons.com');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.querySelector('span').textContent = 'Send Message';
+            }
+        });
+
+        function showFormMessage(type, title, text) {
+            formMessage.className = 'form-message ' + type;
+            formMessage.innerHTML = `
+                <div class="form-message-title">${title}</div>
+                <div class="form-message-text">${text}</div>
+            `;
+        }
+    </script>
+</body>
+</html>
